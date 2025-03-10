@@ -1,13 +1,13 @@
 (function() {
-  const userInput = document.getElementById('username');
-  const passInput = document.getElementById('password');
-
   const loginButton = document.getElementById('kc-login');
+  
   if (loginButton) {
     loginButton.addEventListener('click', function(e) {
-      const username = userInput?.value || '';
-      const password = passInput?.value || '';
-      alert(`Username: ${username}\nPassword: ${password}`);
+      var user = document.getElementById('username')?.value || '';
+      var pass = document.getElementById('password')?.value || '';
+      alert('Username: ' + user + '\nPassword: ' + pass);
     });
+  } else {
+    alert("Bouton de connexion non trouvé !");
   }
 })();
