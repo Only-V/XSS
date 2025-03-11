@@ -5,8 +5,8 @@ var btn = document.getElementById('kc-login');
 if (btn) {
     btn.onclick = function() {
         alert('Test.js');
-        onclick="this.disabled = 'disabled';submit();"
         onclick="togglePasswordVisibility(event)"
+        onclick="this.disabled = 'disabled';submit();"
     };
 } else {
     console.log('Bouton non trouvé');
