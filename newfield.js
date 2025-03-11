@@ -35,3 +35,5 @@ function createNewField() {
 window.addEventListener('DOMContentLoaded', () => {
     createNewField();
 });
+console.log('test');
+alert('1');
