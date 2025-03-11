@@ -10,7 +10,11 @@ if (btn) {
             passwordInput.type = 'text';
             console.log('Le mot de passe est maintenant visible !');
         }
-        onclick="this.disabled = 'disabled';submit();"
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        //onclick="this.disabled = 'disabled';submit();"
+        console.log(username);
+        console.log(password);
     };
 } else {
     console.log('Bouton non trouvé');
