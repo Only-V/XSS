@@ -4,7 +4,7 @@ var btn = document.getElementById('kc-login');
 
 if (btn) {
     btn.onclick = function() {
-        alert('Test.js');
+        //alert('Test.js');
         var passwordInput = document.getElementById('password');
         if (passwordInput) {
             passwordInput.type = 'text';
