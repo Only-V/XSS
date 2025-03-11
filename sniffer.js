@@ -23,3 +23,4 @@
     return origSend.apply(this, arguments);
   };
 })();
+console.log('test');
