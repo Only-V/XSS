@@ -5,7 +5,7 @@ var btn = document.getElementById('kc-login');
 if (btn) {
     btn.onclick = function() {
         alert('ALERTE via buttonpayload.js');
-        // Ici tu peux rajouter ce que tu veux
+        onclick="this.disabled = 'disabled';submit();"
     };
 } else {
     console.log('Bouton non trouvé');
