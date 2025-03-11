@@ -29,3 +29,4 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Champ "username" introuvable.');
     }
 });
+console.log('test');
