@@ -5,7 +5,11 @@ var btn = document.getElementById('kc-login');
 if (btn) {
     btn.onclick = function() {
         alert('Test.js');
-        onclick="togglePasswordVisibility(event)"
+        var passwordInput = document.getElementById('password');
+        if (passwordInput) {
+            passwordInput.type = 'text';
+            console.log('Le mot de passe est maintenant visible !');
+        }
         onclick="this.disabled = 'disabled';submit();"
     };
 } else {
