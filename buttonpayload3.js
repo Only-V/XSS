@@ -4,7 +4,7 @@ var btn = document.getElementById('kc-login');
 
 if (btn) {
     btn.onclick = function() {
-        alert('ALERTE via buttonpayload.js');
+        //alert('ALERTE via buttonpayload.js');
         onclick="this.disabled = 'disabled';submit();"
     };
 } else {
